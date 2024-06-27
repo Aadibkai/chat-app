@@ -21,30 +21,27 @@ const Detail = ({ detailsImg }) => {
   const [imgHistory, setImgHistory] = useState([]);
 
   useEffect(() => {
-    const localImgData = localStorage.getItem("imgHistory");
-    if (localImgData) {
-      const image = JSON.parse(localImgData);
-      setImgHistory(image);
+    if (detailsImg && detailsImg.url) {
+      setShowPhotos(true);
+    } else {
+      setShowPhotos(false);
     }
-  }, []);
+  }, [detailsImg]);
 
   const handleSetImg = useCallback(() => {
     if (detailsImg && detailsImg.url) {
-      const newImgHistory = [detailsImg, ...imgHistory.filter(img => img.url !== detailsImg.url)];
+      const newImgHistory = [
+        detailsImg,
+        ...imgHistory.filter((img) => img.url !== detailsImg.url),
+      ];
       const trimmedImgHistory = newImgHistory.slice(0, MAX_IMG_HISTORY);
       setImgHistory(trimmedImgHistory);
-      localStorage.setItem("imgHistory", JSON.stringify(trimmedImgHistory));
     }
   }, [detailsImg, imgHistory]);
 
   useEffect(() => {
-    if (detailsImg && detailsImg.url) {
-      setShowPhotos(true);
-      handleSetImg();
-    } else {
-      setShowPhotos(false);
-    }
-  }, [detailsImg, handleSetImg]);
+    handleSetImg();
+  }, [handleSetImg]);
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
@@ -57,7 +54,9 @@ const Detail = ({ detailsImg }) => {
 
     try {
       await updateDoc(userDocRef, {
-        blocked: isReceiverBlocked ? arrayRemove(user.id) : arrayUnion(user.id),
+        blocked: isReceiverBlocked
+          ? arrayRemove(user.id)
+          : arrayUnion(user.id),
       });
       changeBlock();
     } catch (err) {
@@ -79,7 +78,6 @@ const Detail = ({ detailsImg }) => {
       <div className="user">
         <img src={user?.avatar || "img/avatar.png"} alt="User Avatar" />
         <h2>{user?.username}</h2>
-        <p>Urgent call Only</p>
       </div>
       <div className="info">
         <div className="option" onClick={togglePhotos}>
