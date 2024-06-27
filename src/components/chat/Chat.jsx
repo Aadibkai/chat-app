@@ -1,13 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./chat.css";
 import EmojiPicker from "emoji-picker-react";
-import {
-  arrayUnion,
-  doc,
-  getDoc,
-  onSnapshot,
-  updateDoc,
-} from "firebase/firestore";
+import { arrayUnion, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { useChatStore } from "../../lib/chatStore";
 import { useUserStore } from "../../lib/userStore";
@@ -20,7 +14,8 @@ const Chat = ({ AddedImg }) => {
   const [imageFile, setImageFile] = useState({ file: null, url: "" });
 
   const { currentUser } = useUserStore();
-  const { chatId, user, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
+  const { chatId, user, isCurrentUserBlocked, isReceiverBlocked } =
+    useChatStore();
 
   const endRef = useRef(null);
 
@@ -111,7 +106,9 @@ const Chat = ({ AddedImg }) => {
         {chat?.messages?.map((message) => (
           <div
             key={message.createdAt.toMillis()}
-            className={message.senderId === currentUser?.id ? "message own" : "message"}
+            className={
+              message.senderId === currentUser?.id ? "message own" : "message"
+            }
           >
             <div className="texts">
               {message.img && <img src={message.img} alt="Sent by user" />}
@@ -136,7 +133,7 @@ const Chat = ({ AddedImg }) => {
           <input
             type="file"
             id="file"
-            style={{ display: 'none' }}
+            style={{ display: "none" }}
             onChange={handleImg}
           />
         </div>
