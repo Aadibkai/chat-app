@@ -9,7 +9,7 @@ import { useUserStore } from "./lib/userStore";
 import { useChatStore } from "./lib/chatStore";
 
 const App = () => {
-  const { currentUser, isLoading,fetchUserInfo } = useUserStore();
+  const { currentUser, isLoading, fetchUserInfo } = useUserStore();
   const { chatId } = useChatStore();
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const App = () => {
     return () => {
       unSub();
     };
-  }, [currentUser]);
+  }, [fetchUserInfo]);
 
   if (isLoading) return <div className="loading">Loading...</div>;
 
