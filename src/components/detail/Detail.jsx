@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { useChatStore } from "../../lib/chatStore";
 import { auth, db } from "../../lib/firebase";
 import { useUserStore } from "../../lib/userStore";
 import "./detail.css";
+
+const MAX_IMG_HISTORY = 2; 
 
 const Detail = ({ detailsImg }) => {
   const {
@@ -26,6 +28,14 @@ const Detail = ({ detailsImg }) => {
     }
   }, []);
 
+  const handleSetImg = useCallback(() => {
+    if (detailsImg && detailsImg.url) {
+      const newImgHistory = [...imgHistory, detailsImg].slice(-MAX_IMG_HISTORY);
+      setImgHistory(newImgHistory);
+      localStorage.setItem("imgHistory", JSON.stringify(newImgHistory));
+    }
+  }, [detailsImg, imgHistory]);
+
   useEffect(() => {
     if (detailsImg && detailsImg.url) {
       setShowPhotos(true);
@@ -33,15 +43,7 @@ const Detail = ({ detailsImg }) => {
     } else {
       setShowPhotos(false);
     }
-  }, [detailsImg]);
-
-  const handleSetImg = () => {
-    if (detailsImg) {
-      const newImgHistory = [...imgHistory, detailsImg];
-      setImgHistory(newImgHistory);
-      localStorage.setItem("imgHistory", JSON.stringify(newImgHistory));
-    }
-  };
+  }, [detailsImg, handleSetImg]);
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
@@ -74,7 +76,7 @@ const Detail = ({ detailsImg }) => {
   return (
     <div className="detail">
       <div className="user">
-        <img src={user?.avatar || "img/avatar.png"} alt="" />
+        <img src={user?.avatar || "img/avatar.png"} alt="User Avatar" />
         <h2>{user?.username}</h2>
         <p>Urgent call Only</p>
       </div>
@@ -84,7 +86,7 @@ const Detail = ({ detailsImg }) => {
             <span style={{ cursor: "pointer" }}>Shared Photos</span>
             <img
               src={showPhotos ? "img/arrowUp.png" : "img/arrowDown.png"}
-              alt=""
+              alt="Toggle Arrow"
             />
           </div>
           {showPhotos && (
@@ -95,7 +97,7 @@ const Detail = ({ detailsImg }) => {
                     <img src={img.url} alt={`img-${index}`} />
                     <span>{img.file.name}</span>
                   </div>
-                  <img src="img/download.png" alt="" className="icon" />
+                  <img src="img/download.png" alt="Download Icon" className="icon" />
                 </div>
               ))}
             </div>
@@ -106,7 +108,7 @@ const Detail = ({ detailsImg }) => {
             <span style={{ cursor: "pointer" }}>Privacy & Help</span>
             <img
               src={isVisible ? "img/arrowUp.png" : "img/arrowDown.png"}
-              alt="toggle arrow"
+              alt="Toggle Arrow"
             />
           </div>
           {isVisible && (
@@ -123,13 +125,11 @@ const Detail = ({ detailsImg }) => {
         <div className="option">
           <div className="title">
             <span style={{ cursor: "pointer" }}>Shared Files</span>
-            <img src="img/arrowUp.png" alt="" />
+            <img src="img/arrowUp.png" alt="Toggle Arrow" />
           </div>
         </div>
         <button
-          className={`blockButton ${
-            isCurrentUserBlocked || isReceiverBlocked ? "blocked" : ""
-          }`}
+          className={`blockButton ${isCurrentUserBlocked || isReceiverBlocked ? "blocked" : ""}`}
           onClick={handleBlock}
         >
           {isCurrentUserBlocked
