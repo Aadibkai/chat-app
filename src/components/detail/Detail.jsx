@@ -1,13 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { useChatStore } from "../../lib/chatStore";
 import { auth, db } from "../../lib/firebase";
 import { useUserStore } from "../../lib/userStore";
 import "./detail.css";
 
-const Detail = ({ uploadedImage }) => {
+const Detail = ({ detailsImg }) => {
   const {
-    // chatId,
     user,
     isCurrentUserBlocked,
     isReceiverBlocked,
@@ -17,7 +16,32 @@ const Detail = ({ uploadedImage }) => {
   const { currentUser } = useUserStore();
   const [showPhotos, setShowPhotos] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  // const [photos, setPhotos] = useState([]);
+  const [imgHistory, setImgHistory] = useState([]);
+
+  useEffect(() => {
+    const localImgData = localStorage.getItem("imgHistory");
+    if (localImgData) {
+      const image = JSON.parse(localImgData);
+      setImgHistory(image);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (detailsImg && detailsImg.url) {
+      setShowPhotos(true);
+      handleSetImg();
+    } else {
+      setShowPhotos(false);
+    }
+  }, [detailsImg]);
+
+  const handleSetImg = () => {
+    if (detailsImg) {
+      const newImgHistory = [...imgHistory, detailsImg];
+      setImgHistory(newImgHistory);
+      localStorage.setItem("imgHistory", JSON.stringify(newImgHistory));
+    }
+  };
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
@@ -38,10 +62,6 @@ const Detail = ({ uploadedImage }) => {
     }
   };
 
-  // const addPhoto = (newPhotos) => {
-  //   setPhotos([...photos, ...newPhotos]);
-  // };
-
   const handleLogout = () => {
     auth.signOut();
     resetChat();
@@ -61,7 +81,7 @@ const Detail = ({ uploadedImage }) => {
       <div className="info">
         <div className="option" onClick={togglePhotos}>
           <div className="title">
-            <span style={{cursor:"pointer"}}>Shared Photos</span>
+            <span style={{ cursor: "pointer" }}>Shared Photos</span>
             <img
               src={showPhotos ? "img/arrowUp.png" : "img/arrowDown.png"}
               alt=""
@@ -69,52 +89,21 @@ const Detail = ({ uploadedImage }) => {
           </div>
           {showPhotos && (
             <div className="photos">
-            <div className="photoItem">
-              <div className="photoDetail">
-                <img
-                  src={ uploadedImage }
-                  alt=""
-                />
-                <span>photo_2024_2.png</span>
-              </div>
-              <img src="img/download.png" alt="" className="icon" />
+              {imgHistory.map((img, index) => (
+                <div className="photoItem" key={index}>
+                  <div className="photoDetail">
+                    <img src={img.url} alt={`img-${index}`} />
+                    <span>{img.file.name}</span>
+                  </div>
+                  <img src="img/download.png" alt="" className="icon" />
+                </div>
+              ))}
             </div>
-            <div className="photoItem">
-              <div className="photoDetail">
-                <img
-                  src={ uploadedImage }
-                  alt=""
-                />
-                <span>photo_2024_2.png</span>
-              </div>
-              <img src="img/download.png" alt="" className="icon" />
-            </div>
-            <div className="photoItem">
-              <div className="photoDetail">
-                <img
-                  src={ uploadedImage }
-                  alt=""
-                />
-                <span>photo_2024_2.png</span>
-              </div>
-              <img src="img/download.png" alt="" className="icon" />
-            </div>
-            <div className="photoItem">
-              <div className="photoDetail">
-                <img
-                  src={ uploadedImage }
-                  alt=""
-                />
-                <span>photo_2024_2.png</span>
-              </div>
-              <img src="img/download.png" alt="" className="icon" />
-            </div>
-          </div>
           )}
         </div>
         <div className="option" onClick={toggleVisibility}>
           <div className="title">
-            <span  style={{cursor:"pointer"}}>Privacy & Help</span>
+            <span style={{ cursor: "pointer" }}>Privacy & Help</span>
             <img
               src={isVisible ? "img/arrowUp.png" : "img/arrowDown.png"}
               alt="toggle arrow"
@@ -133,7 +122,7 @@ const Detail = ({ uploadedImage }) => {
         </div>
         <div className="option">
           <div className="title">
-            <span  style={{cursor:"pointer"}}>Shared Files</span>
+            <span style={{ cursor: "pointer" }}>Shared Files</span>
             <img src="img/arrowUp.png" alt="" />
           </div>
         </div>

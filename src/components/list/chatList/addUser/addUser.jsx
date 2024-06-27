@@ -4,7 +4,6 @@ import {
   arrayUnion,
   collection,
   doc,
-  // getDoc,
   getDocs,
   query,
   serverTimestamp,
@@ -15,9 +14,8 @@ import {
 import { useState } from "react";
 import { useUserStore } from "../../../../lib/userStore";
 
-const AddUser = () => {
+const AddUser = ({ onClose }) => {
   const [user, setUser] = useState(null);
-
   const { currentUser } = useUserStore();
 
   const handleSearch = async (e) => {
@@ -27,9 +25,7 @@ const AddUser = () => {
 
     try {
       const userRef = collection(db, "users");
-
       const q = query(userRef, where("username", "==", username));
-
       const querySnapShot = await getDocs(q);
 
       if (!querySnapShot.empty) {
@@ -46,7 +42,6 @@ const AddUser = () => {
 
     try {
       const newChatRef = doc(chatRef);
-
       await setDoc(newChatRef, {
         createdAt: serverTimestamp(),
         messages: [],
@@ -69,6 +64,8 @@ const AddUser = () => {
           updatedAt: Date.now(),
         }),
       });
+
+      onClose();
     } catch (err) {
       console.log(err);
     }

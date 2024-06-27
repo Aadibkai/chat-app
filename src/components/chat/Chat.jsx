@@ -13,7 +13,7 @@ import { useChatStore } from "../../lib/chatStore";
 import { useUserStore } from "../../lib/userStore";
 import upload from "../../lib/upload";
 
-const Chat = () => {
+const Chat = ({ AddedImg }) => {
   const [chat, setChat] = useState(null);
   const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
   const [messageText, setMessageText] = useState("");
@@ -23,20 +23,6 @@ const Chat = () => {
   const { chatId, user, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
 
   const endRef = useRef(null);
-
-  const handleImg = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImageFile({
-          file: file,
-          url: reader.result,
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   useEffect(() => {
     if (chat?.messages) {
@@ -53,6 +39,23 @@ const Chat = () => {
       return () => unsubscribe();
     }
   }, [chatId]);
+
+  const handleImg = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const imageUrl = reader.result;
+        setImageFile({
+          file: file,
+          url: imageUrl,
+        });
+        
+        AddedImg({ file, url: imageUrl }); 
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleEmojiClick = (emojiObject) => {
     setMessageText((prevText) => prevText + emojiObject.emoji);
@@ -173,8 +176,6 @@ const Chat = () => {
           <img
             src="img/emoji.png"
             alt="Emoji Icon"
-            onChange={(e) => setMessageText(e.target.value)}
-            onKeyPress={handleKeyPress}
             onClick={() => setOpenEmojiPicker((prev) => !prev)}
           />
           {openEmojiPicker && (

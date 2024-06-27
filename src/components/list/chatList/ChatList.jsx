@@ -8,33 +8,23 @@ import { useChatStore } from "../../../lib/chatStore";
 
 const ChatList = () => {
   const [chats, setChats] = useState([]);
-  const [addMode, setAddMode] = useState(false);
+  const [addMode, setAddMode] = useState(false); 
   const [input, setInput] = useState("");
-
   const { currentUser } = useUserStore();
-  const {  changeChat } = useChatStore();
+  const { changeChat } = useChatStore();
 
   useEffect(() => {
-    const unSub = onSnapshot(
-      doc(db, "userchats", currentUser.id),
-      async (res) => {
-        const items = res.data().chats;
-
-        const promises = items.map(async (item) => {
-          const userDocRef = doc(db, "users", item.receiverId);
-          const userDocSnap = await getDoc(userDocRef);
-
-          const user = userDocSnap.data();
-
-          return { ...item, user };
-        });
-
-        const chatData = await Promise.all(promises);
-
-        setChats(chatData.sort((a, b) => b.updatedAt - a.updatedAt));
-      }
-    );
-
+    const unSub = onSnapshot(doc(db, "userchats", currentUser.id), async (res) => {
+      const items = res.data().chats;
+      const promises = items.map(async (item) => {
+        const userDocRef = doc(db, "users", item.receiverId);
+        const userDocSnap = await getDoc(userDocRef);
+        const user = userDocSnap.data();
+        return { ...item, user };
+      });
+      const chatData = await Promise.all(promises);
+      setChats(chatData.sort((a, b) => b.updatedAt - a.updatedAt));
+    });
     return () => {
       unSub();
     };
@@ -45,15 +35,9 @@ const ChatList = () => {
       const { user, ...rest } = item;
       return rest;
     });
-
-    const chatIndex = userChats.findIndex(
-      (item) => item.chatId === chat.chatId
-    );
-
+    const chatIndex = userChats.findIndex((item) => item.chatId === chat.chatId);
     userChats[chatIndex].isSeen = true;
-
     const userChatsRef = doc(db, "userchats", currentUser.id);
-
     try {
       await updateDoc(userChatsRef, {
         chats: userChats,
@@ -64,9 +48,7 @@ const ChatList = () => {
     }
   };
 
-  const filteredChats = chats.filter((c) =>
-    c.user.username.toLowerCase().includes(input.toLowerCase())
-  );
+  const filteredChats = chats.filter((c) => c.user.username.toLowerCase().includes(input.toLowerCase()));
 
   return (
     <div className="chatList">
@@ -83,7 +65,7 @@ const ChatList = () => {
           src={addMode ? "img/minus.png" : "img/plus.png"}
           alt=""
           className="add"
-          onClick={() => setAddMode((prev) => !prev)}
+          onClick={() => setAddMode((prev) => !prev)} 
         />
       </div>
       {filteredChats.map((chat) => (
@@ -113,8 +95,7 @@ const ChatList = () => {
           </div>
         </div>
       ))}
-
-      {addMode && <AddUser />}
+      {addMode && <AddUser onClose={() => setAddMode(false)} />} 
     </div>
   );
 };
