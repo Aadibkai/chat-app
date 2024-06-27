@@ -9,7 +9,7 @@ import { useUserStore } from "./lib/userStore";
 import { useChatStore } from "./lib/chatStore";
 
 const App = () => {
-  const { currentUser, isLoading, fetchUserInfo } = useUserStore();
+  const { currentUser, isLoading } = useUserStore();
   const { chatId } = useChatStore();
 
   useEffect(() => {

@@ -17,7 +17,7 @@ const Detail = ({ uploadedImage }) => {
   const { currentUser } = useUserStore();
   const [showPhotos, setShowPhotos] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [photos, setPhotos] = useState([]);
+  // const [photos, setPhotos] = useState([]);
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);

@@ -125,7 +125,7 @@ const Chat = () => {
             className={message.senderId === currentUser?.id ? "message own" : "message"}
           >
             <div className="texts">
-              {message.img && <img src={message.img} alt="Sent Image" />}
+              {message.img && <img src={message.img}  />}
               <p>{message.text}</p>
             </div>
           </div>
