@@ -1,7 +1,7 @@
 .chatList {
     flex: 1;
     overflow: scroll;
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: none; 
     -ms-overflow-style: none;
     .search {
       display: flex;

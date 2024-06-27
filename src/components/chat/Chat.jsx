@@ -107,6 +107,12 @@ const Chat = () => {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSend();
+    }
+  };
+
   return (
     <div className="chat">
       <div className="top">
@@ -160,12 +166,15 @@ const Chat = () => {
           }
           value={messageText}
           onChange={(e) => setMessageText(e.target.value)}
+          onKeyPress={handleKeyPress}
           disabled={isCurrentUserBlocked || isReceiverBlocked}
         />
         <div className="emoji">
           <img
             src="img/emoji.png"
             alt="Emoji Icon"
+            onChange={(e) => setMessageText(e.target.value)}
+            onKeyPress={handleKeyPress}
             onClick={() => setOpenEmojiPicker((prev) => !prev)}
           />
           {openEmojiPicker && (
