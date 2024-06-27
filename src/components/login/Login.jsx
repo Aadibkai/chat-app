@@ -61,15 +61,17 @@ const Login = () => {
     setLoading(true);
     const formData = new FormData(e.target);
     const { email, password } = Object.fromEntries(formData);
+    console.log("Logging in with email:", email);  // Debugging line
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      toast.success("Logged in successfully!");
     } catch (err) {
-      console.log(err);
+      console.log("Error during sign in:", err);
       toast.error(err.message);
     } finally {
       setLoading(false);
     }
-  };
+};
   return (
     <div className="login">
       <div className="item">
@@ -85,7 +87,7 @@ const Login = () => {
         <h2>Create an Account</h2>
         <form onSubmit={handleRegister}>
           <label htmlFor="file">
-            <img src={avatar.url || "../../../public/img/avatar.png"} alt="" />
+            <img src={avatar.url || "img/avatar.png"} alt="" />
             Upload an image
           </label>
           <input

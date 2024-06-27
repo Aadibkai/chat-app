@@ -12,7 +12,7 @@ const ChatList = () => {
   const [input, setInput] = useState("");
 
   const { currentUser } = useUserStore();
-  const { chatId, changeChat } = useChatStore();
+  const {  changeChat } = useChatStore();
 
   useEffect(() => {
     const unSub = onSnapshot(
@@ -72,7 +72,7 @@ const ChatList = () => {
     <div className="chatList">
       <div className="search">
         <div className="searchBar">
-          <img src="./search.png" alt="" />
+          <img src="img/search.png" alt="" />
           <input
             type="text"
             placeholder="Search"
@@ -80,7 +80,7 @@ const ChatList = () => {
           />
         </div>
         <img
-          src={addMode ? "./minus.png" : "./plus.png"}
+          src={addMode ? "img/minus.png" : "img/plus.png"}
           alt=""
           className="add"
           onClick={() => setAddMode((prev) => !prev)}
@@ -98,8 +98,8 @@ const ChatList = () => {
           <img
             src={
               chat.user.blocked.includes(currentUser.id)
-                ? "./avatar.png"
-                : chat.user.avatar || "./avatar.png"
+                ? "img/avatar.png"
+                : chat.user.avatar || "img/avatar.png"
             }
             alt=""
           />
