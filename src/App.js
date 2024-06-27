@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Chat from "./components/chat/Chat";
 import Detail from "./components/detail/Detail";
 import List from "./components/list/List";
@@ -11,7 +11,7 @@ import { useChatStore } from "./lib/chatStore";
 const App = () => {
   const { currentUser, isLoading, fetchUserInfo } = useUserStore();
   const { chatId } = useChatStore();
-  const [detailsImg, setDetailsImg]=useState()
+  const [detailsImg, setDetailsImg] = useState(null);
 
   useEffect(() => {
     const unSub = onAuthStateChanged(auth, (user) => {
@@ -19,21 +19,23 @@ const App = () => {
     });
 
     return () => {
-    unSub();
+      unSub();
     };
   }, [fetchUserInfo]);
 
   if (isLoading) return <div className="loading">Loading...</div>;
-  const handleAddImage=(item)=>{
-   setDetailsImg(item)
-  }
+
+  const handleAddImage = (item) => {
+    setDetailsImg(item);
+  };
+
   return (
     <div className="container">
       {currentUser ? (
         <>
           <List />
-          {chatId && <Chat AddedImg={handleAddImage}/>}
-          {chatId && <Detail detailsImg={detailsImg}/>}
+          {chatId && <Chat AddedImg={handleAddImage} />}
+          {chatId && <Detail detailsImg={detailsImg} />}{" "}
         </>
       ) : (
         <Login />

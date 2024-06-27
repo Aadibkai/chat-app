@@ -44,14 +44,15 @@ const Chat = ({ AddedImg }) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
         const imageUrl = reader.result;
         setImageFile({
           file: file,
           url: imageUrl,
         });
-        
-        AddedImg({ file, url: imageUrl }); 
+
+        // Pass image data to parent component
+        AddedImg({ file: file, url: imageUrl });
       };
       reader.readAsDataURL(file);
     }
@@ -81,32 +82,11 @@ const Chat = ({ AddedImg }) => {
         }),
       });
 
-      const userIDs = [currentUser.id, user.id];
-
-      for (const id of userIDs) {
-        const userChatsRef = doc(db, "userchats", id);
-        const userChatsSnapshot = await getDoc(userChatsRef);
-
-        if (userChatsSnapshot.exists()) {
-          const userChatsData = userChatsSnapshot.data();
-          const chatIndex = userChatsData.chats.findIndex((c) => c.chatId === chatId);
-
-          if (chatIndex !== -1) {
-            userChatsData.chats[chatIndex].lastMessage = messageText.trim();
-            userChatsData.chats[chatIndex].isSeen = id === currentUser.id;
-            userChatsData.chats[chatIndex].updatedAt = Date.now();
-
-            await updateDoc(userChatsRef, {
-              chats: userChatsData.chats,
-            });
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error sending message:", error);
-    } finally {
+      // Clear image and message input after sending
       setImageFile({ file: null, url: "" });
       setMessageText("");
+    } catch (error) {
+      console.error("Error sending message:", error);
     }
   };
 

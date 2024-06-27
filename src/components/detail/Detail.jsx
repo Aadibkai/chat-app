@@ -5,7 +5,7 @@ import { auth, db } from "../../lib/firebase";
 import { useUserStore } from "../../lib/userStore";
 import "./detail.css";
 
-const MAX_IMG_HISTORY = 2; 
+const MAX_IMG_HISTORY = 7;
 
 const Detail = ({ detailsImg }) => {
   const {
@@ -30,9 +30,10 @@ const Detail = ({ detailsImg }) => {
 
   const handleSetImg = useCallback(() => {
     if (detailsImg && detailsImg.url) {
-      const newImgHistory = [...imgHistory, detailsImg].slice(-MAX_IMG_HISTORY);
-      setImgHistory(newImgHistory);
-      localStorage.setItem("imgHistory", JSON.stringify(newImgHistory));
+      const newImgHistory = [detailsImg, ...imgHistory.filter(img => img.url !== detailsImg.url)];
+      const trimmedImgHistory = newImgHistory.slice(0, MAX_IMG_HISTORY);
+      setImgHistory(trimmedImgHistory);
+      localStorage.setItem("imgHistory", JSON.stringify(trimmedImgHistory));
     }
   }, [detailsImg, imgHistory]);
 
@@ -97,7 +98,11 @@ const Detail = ({ detailsImg }) => {
                     <img src={img.url} alt={`img-${index}`} />
                     <span>{img.file.name}</span>
                   </div>
-                  <img src="img/download.png" alt="Download Icon" className="icon" />
+                  <img
+                    src="img/download.png"
+                    alt="Download Icon"
+                    className="icon"
+                  />
                 </div>
               ))}
             </div>
@@ -129,7 +134,9 @@ const Detail = ({ detailsImg }) => {
           </div>
         </div>
         <button
-          className={`blockButton ${isCurrentUserBlocked || isReceiverBlocked ? "blocked" : ""}`}
+          className={`blockButton ${
+            isCurrentUserBlocked || isReceiverBlocked ? "blocked" : ""
+          }`}
           onClick={handleBlock}
         >
           {isCurrentUserBlocked
